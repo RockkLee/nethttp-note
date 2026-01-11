@@ -1,27 +1,30 @@
 package monster
 
 import (
-	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
+
+	"github.com/dreamsofcode-io/nethttp/entity"
+	"github.com/dreamsofcode-io/nethttp/model"
 )
 
 type Handler struct{}
 
-func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusCreated)
+func (h *Handler) Create(w http.ResponseWriter, r *http.Request) model.MonsterRes {
 	log.Println("received request to create a monster")
-	w.Write([]byte("Monster created!"))
+	return model.MonsterRes{Desc: "Monster created!"}
 }
 
-func (h *Handler) FindByID(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) FindByID(w http.ResponseWriter, r *http.Request) (entity.Monster, error) {
 	log.Println("handling READ request - Method:", r.Method)
 	monster, exists := loadMonsters()[r.PathValue("id")]
 	if !exists {
 		w.WriteHeader(http.StatusNotFound)
-		return
+		return entity.Monster{}, errors.New("FindByID error")
+
 	}
-	json.NewEncoder(w).Encode(monster)
+	return monster, nil
 }
 
 func (h *Handler) UpdateByID(w http.ResponseWriter, r *http.Request) {

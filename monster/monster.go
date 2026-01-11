@@ -1,15 +1,13 @@
 package monster
 
-import "strconv"
+import (
+	"strconv"
 
-type Monster struct {
-	ID     uint     `json:"id"`
-	Name   string   `json:"name"`
-	Powers []string `json:"powers"`
-}
+	"github.com/dreamsofcode-io/nethttp/entity"
+)
 
-func monsters() []Monster {
-	return []Monster{
+func monsters() []entity.Monster {
+	return []entity.Monster{
 		{
 			ID:     1,
 			Name:   "Dracula",
@@ -38,9 +36,9 @@ func monsters() []Monster {
 	}
 }
 
-func loadMonsters() map[string]Monster {
+func loadMonsters() map[string]entity.Monster {
 	monsters := monsters()
-	res := make(map[string]Monster, len(monsters))
+	res := make(map[string]entity.Monster, len(monsters))
 
 	for _, x := range monsters {
 		res[strconv.Itoa(int(x.ID))] = x

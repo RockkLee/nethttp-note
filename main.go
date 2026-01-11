@@ -2,28 +2,39 @@ package main
 
 import (
 	"fmt"
-	"log"
+	// "log"
 	"net/http"
+
+	"github.com/dreamsofcode-io/nethttp/middleware"
+	"github.com/dreamsofcode-io/nethttp/router"
 )
 
-func handleOther(w http.ResponseWriter, r *http.Request) {
-	log.Println("Received a non domain request")
-	w.Write([]byte("Hello, stranger..."))
-}
+// func handleOther(w http.ResponseWriter, r *http.Request) {
+// 	log.Println("Received a non domain request")
+// 	w.Write([]byte("Hello, stranger..."))
+// }
 
-func handle(w http.ResponseWriter, r *http.Request) {
-	log.Println("Received a request at my domain")
-	w.Write([]byte("Hello, Domain name!"))
-}
+// func handle(w http.ResponseWriter, r *http.Request) {
+// 	log.Println("Received a request at my domain")
+// 	w.Write([]byte("Hello, Domain name!"))
+// }
 
 func main() {
-	router := http.NewServeMux()
-	router.HandleFunc("/", handleOther)
-	router.HandleFunc("dreamsofcode.foo/", handle)
+	rootRouter := http.NewServeMux()
+	router.LoadRouters(rootRouter)
+	// rootRouter.HandleFunc("/", handleOther)
+	// rootRouter.HandleFunc("dreamsofcode.foo/", handle)
+
+	middlewareStack := middleware.CreateStack(
+		middleware.Logging,
+		middleware.AllowCors,
+		middleware.IsAuthenticated,
+		middleware.CheckPermissions,
+	)
 
 	server := http.Server{
 		Addr:    ":8080",
-		Handler: router,
+		Handler: middlewareStack(rootRouter),
 	}
 
 	fmt.Println("Server listening on port :8080")

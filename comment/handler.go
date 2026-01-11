@@ -1,18 +1,16 @@
 package comment
 
 import (
-	"fmt"
+	"log"
 	"net/http"
+
+	"github.com/dreamsofcode-io/nethttp/middleware"
 )
 
 type Handler struct{}
 
-func NewHandler() *Handler {
-	return &Handler{}
-}
-
-func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Can't create comment, no user ID")
-	w.WriteHeader(http.StatusInternalServerError)
-	w.Write([]byte(http.StatusText(http.StatusInternalServerError)))
+func (h *Handler) Create(w http.ResponseWriter, r *http.Request) bool {
+	userId, ok := r.Context().Value(middleware.AuthUserID).(string)
+	log.Println("creating comment for user:", userId)
+	return ok
 }
